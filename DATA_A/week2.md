@@ -41,7 +41,8 @@ https://www.youtube.com/watch?v=Il6L8OtNFpc&list=PLVsNizTWUw7FGzSRCkQrPEEe-ljVXg
 API: 프로그램끼리 데이터를 주고받을 수 있도록 정의된 규칙
 웹 API: HTTP를 통해 인터넷상에서 데이터를 요청, 응답하는 방식
 GET/POST 두 요청 방식의 차이: GET은 URL 쿼리 스트링에, POST는 바디에 정보를 담아 전송
-- 대부분의 웹 API가 JSON이나 XML 형태로 데이터를 반환한다는 점, 그리고 파이썬에서 `json.dumps()`/`json.loads()`와 `xml.etree.ElementTree`의 `fromstring()`/`findtext()`/`findall()`로 이 데이터를 다룰 수 있다는 걸 배웠다.
+
+대부분의 웹 API가 JSON이나 XML 형태로 데이터를 반환한다는 점, 그리고 파이썬에서 `json.dumps()`/`json.loads()`와 `xml.etree.ElementTree`의 `fromstring()`/`findtext()`/`findall()`로 이 데이터를 다룰 수 있다는 걸 배웠다.
 
 가장 인상적이었던 부분은 requests 패키지 하나로 API를 실제로 호출해볼 수 있다는 점이었다.
 `requests.get(url)`로 요청을 보내고 `r.json()`으로 바로 딕셔너리 형태로 파싱한 뒤, 필요한 값만 리스트 컴프리헨션으로 추출해 `pd.DataFrame()`에 넣으면 곧바로 분석 가능한 표가 된다는 흐름이 API와 데이터프레임이 연결되는 과정을 이해하는 데 도움이 됐다.
