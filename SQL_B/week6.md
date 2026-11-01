@@ -68,36 +68,46 @@ JOIN은 여러 테이블을 연결해서 분석 질문에 답하기 위해 반�
 ## 01.
 
 ```
-개념 이름:
-개념 설명:
+개념 이름: INNER JOIN
+개념 설명: 두 테이블의 공통 요소, 즉 Key가 양쪽에 모두 있는 행만 연결하는 JOIN. 집합으로 보면 교집합이라 한쪽에만 있는 행은 결과에서 빠짐 (Table A의 1, 2, 3과 Table B의 1, 2, 4를 JOIN하면 1, 2만 남음). ON으로 Key를 꼭 적어줘야 함 (CROSS JOIN만 ON이 필요 없음)
 예시 쿼리:
+SELECT
+  tp.*,
+  t.*
+FROM basic.trainer_pokemon AS tp
+INNER JOIN basic.trainer AS t
+ON tp.trainer_id = t.id
+# 포획 기록(trainer_pokemon)의 trainer_id와 같은 id를 가진 트레이너가 있는 행만 연결
 ```
 
 ## 02.
 
 ```
-개념 이름:
-개념 설명:
+개념 이름: LEFT JOIN
+개념 설명: 왼쪽 테이블을 기준으로 연결하는 JOIN. 기준 테이블의 행은 모두 남기고, 오른쪽 테이블에 짝이 없으면 NULL로 채워짐 (Table A의 3 '다'는 B에 없어서 NULL). 처음에는 LEFT JOIN만 써도 충분하고, 기준이 되는 테이블을 왼쪽에 두고 오른쪽에 데이터를 계속 붙여나가는 방식. JOIN 쿼리는 테이블 확인 → 기준 테이블 정의 → JOIN Key 찾기 → 결과 예상 → 쿼리 작성/검증 순서로 작성
 예시 쿼리:
+SELECT
+  tp.*,
+  t.*
+FROM basic.trainer_pokemon AS tp
+LEFT JOIN basic.trainer AS t
+ON tp.trainer_id = t.id
+# AS tp처럼 별칭(alias)을 주면 테이블 이름이 길어도 tp.trainer_id처럼 짧게 쓸 수 있음
 ```
 
 ## (선택) 03.
 
 ```
-개념 이름:
-개념 설명:
-헷갈린 점:
+개념 이름: NULL
+개념 설명: 값이 없음, 알 수 없음을 뜻함. JOIN에서는 연결할 값이 없는 경우에 나타남 (LEFT JOIN에서 오른쪽 테이블에 짝이 없을 때)
+헷갈린 점: 0이나 공백이랑 같은 건 줄 알았는데 값이 아예 없는 것이라 다름. 그래서 NULL인지 확인할 때는 = 대신 IS NULL을 씀 (문제 3에서 사용)
 ```
 
 ---
 
 # 2️⃣ 수행 인증란
 
-아래 중 하나 이상을 첨부해주세요.
-
-- 강의 수강 화면 캡처
-- JOIN 문제 풀이 정답 화면 캡처
-- JOIN 전후 결과 row 수를 비교한 캡처 또는 메모
+![수행 인증](images/스크린샷%202026-11-01%20오후%207.28.01.png)
 
 ---
 
@@ -112,12 +122,22 @@ JOIN은 여러 테이블을 연결해서 분석 질문에 답하기 위해 반�
 풀이 과정:
 
 ```
-- 사용한 테이블:
-- JOIN key:
-- 날짜를 출력한 형식:
+- 사용한 테이블: BOOK(도서), AUTHOR(저자)
+- JOIN key: AUTHOR_ID (BOOK의 AUTHOR_ID = AUTHOR의 AUTHOR_ID)
+- 날짜를 출력한 형식: DATE_FORMAT(PUBLISHED_DATE, '%Y-%m-%d')로 'YYYY-MM-DD' 형태로 출력. 카테고리가 '경제'인 도서만 거르고 출판일 오름차순으로 정렬
 ```
 
-<!-- 정답을 맞추게 되면, 정답입니다. 이 부분을 캡처해서 이 주석을 지우시고 첨부해주시면 됩니다. -->
+```sql
+SELECT B.BOOK_ID, A.AUTHOR_NAME,
+       DATE_FORMAT(B.PUBLISHED_DATE, '%Y-%m-%d') AS PUBLISHED_DATE
+FROM BOOK AS B
+INNER JOIN AUTHOR AS A
+ON B.AUTHOR_ID = A.AUTHOR_ID
+WHERE B.CATEGORY = '경제'
+ORDER BY B.PUBLISHED_DATE;
+```
+
+![수행 인증](images/스크린샷%202026-11-01%20오후%207.23.11.png)
 
 ## 🧩 문제 2
 
@@ -126,12 +146,21 @@ JOIN은 여러 테이블을 연결해서 분석 질문에 답하기 위해 반�
 풀이 과정:
 
 ```
-- 연결한 테이블:
-- JOIN key:
-- 집계한 값:
+- 연결한 테이블: PRODUCT(상품 가격), OFFLINE_SALE(오프라인 판매량)
+- JOIN key: PRODUCT_ID
+- 집계한 값: 판매량 * 가격을 SUM으로 더해서 SALES로 출력. 상품 코드(PRODUCT_CODE)별로 GROUP BY하고 매출 내림차순, 같으면 상품 코드 오름차순으로 정렬
 ```
 
-<!-- 정답을 맞추게 되면, 정답입니다. 이 부분을 캡처해서 이 주석을 지우시고 첨부해주시면 됩니다. -->
+```sql
+SELECT P.PRODUCT_CODE, SUM(P.PRICE * O.SALES_AMOUNT) AS SALES
+FROM PRODUCT AS P
+INNER JOIN OFFLINE_SALE AS O
+ON P.PRODUCT_ID = O.PRODUCT_ID
+GROUP BY P.PRODUCT_CODE
+ORDER BY SALES DESC, P.PRODUCT_CODE;
+```
+
+![수행 인증](images/스크린샷%202026-11-01%20오후%207.23.31.png)
 
 ## 🧩 문제 3
 
@@ -140,12 +169,21 @@ JOIN은 여러 테이블을 연결해서 분석 질문에 답하기 위해 반�
 풀이 과정:
 
 ```
-- 기준이 되는 왼쪽 테이블:
-- LEFT JOIN이 필요한 이유:
-- NULL이 발생하는 경우:
+- 기준이 되는 왼쪽 테이블: ANIMAL_OUTS (입양 기록은 있으니 이걸 기준으로 보호소 입소 기록인 ANIMAL_INS를 붙임)
+- LEFT JOIN이 필요한 이유: INNER JOIN을 쓰면 입소 기록이 없는 행이 결과에서 사라져서 찾을 수가 없음. LEFT JOIN으로 ANIMAL_OUTS 행을 전부 남겨야 짝이 없는 행을 찾을 수 있음
+- NULL이 발생하는 경우: ANIMAL_INS에 같은 ANIMAL_ID가 없으면 ANIMAL_INS 쪽 컬럼이 NULL이 되고, WHERE I.ANIMAL_ID IS NULL로 걸러냄
 ```
 
-<!-- 정답을 맞추게 되면, 정답입니다. 이 부분을 캡처해서 이 주석을 지우시고 첨부해주시면 됩니다. -->
+```sql
+SELECT O.ANIMAL_ID, O.NAME
+FROM ANIMAL_OUTS AS O
+LEFT JOIN ANIMAL_INS AS I
+ON O.ANIMAL_ID = I.ANIMAL_ID
+WHERE I.ANIMAL_ID IS NULL
+ORDER BY O.ANIMAL_ID;
+```
+
+![수행 인증](images/스크린샷%202026-11-01%20오후%207.23.48.png)
 
 ## 🧩 문제 4
 
@@ -154,13 +192,22 @@ JOIN은 여러 테이블을 연결해서 분석 질문에 답하기 위해 반�
 풀이 과정:
 
 ```
-- 사용한 테이블:
-- JOIN key:
-- 비교한 날짜 컬럼:
-- 정렬 기준:
+- 사용한 테이블: ANIMAL_INS(보호 시작), ANIMAL_OUTS(입양)
+- JOIN key: ANIMAL_ID
+- 비교한 날짜 컬럼: DATETIME. 입양일(ANIMAL_OUTS)이 보호 시작일(ANIMAL_INS)보다 빠른 경우를 찾으려고 I.DATETIME > O.DATETIME 조건 사용
+- 정렬 기준: 보호 시작일(I.DATETIME)이 빠른 순
 ```
 
-<!-- 정답을 맞추게 되면, 정답입니다. 이 부분을 캡처해서 이 주석을 지우시고 첨부해주시면 됩니다. -->
+```sql
+SELECT I.ANIMAL_ID, I.NAME
+FROM ANIMAL_INS AS I
+INNER JOIN ANIMAL_OUTS AS O
+ON I.ANIMAL_ID = O.ANIMAL_ID
+WHERE I.DATETIME > O.DATETIME
+ORDER BY I.DATETIME;
+```
+
+![수행 인증](images/스크린샷%202026-11-01%20오후%207.24.05.png)
 
 ---
 
@@ -176,9 +223,9 @@ JOIN 개념이 헷갈린다면 아래 자료를 함께 참고해도 좋습니다
 # 5️⃣ 이번 주 회고
 
 ```
-1. INNER JOIN과 LEFT JOIN의 차이를 어떻게 이해했는지:
-2. JOIN 문제를 풀 때 가장 먼저 확인해야 할 것:
-3. JOIN 결과가 예상과 달랐던 경험이 있다면:
+1. INNER JOIN과 LEFT JOIN의 차이를 어떻게 이해했는지: INNER JOIN은 양쪽 테이블에 Key가 모두 있는 행만 남는 교집합이고, LEFT JOIN은 왼쪽 기준 테이블은 전부 남기고 오른쪽에 짝이 없으면 NULL로 채워짐. 그래서 없는 데이터를 찾을 때는 LEFT JOIN 후 IS NULL로 거르면 됨
+2. JOIN 문제를 풀 때 가장 먼저 확인해야 할 것: 테이블에 어떤 컬럼이 있는지 보고 기준 테이블과 JOIN Key를 정하는 것. 강의에서 말한 것처럼 결과를 먼저 예상해보고 쿼리를 쓰면 덜 헷갈림
+3. JOIN 결과가 예상과 달랐던 경험이 있다면: 문제 3처럼 INNER JOIN을 쓰면 짝이 없는 행이 통째로 사라져서 row 수가 줄어듦. JOIN 전후 row 수를 비교해보는 습관이 필요하다고 느낌
 ```
 
 수고하셨습니다!
